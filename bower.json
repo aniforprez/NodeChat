@@ -1,0 +1,30 @@
+{
+  "name": "nodechat",
+  "version": "0.0.0",
+  "authors": [
+    "Anirudh <ani.for.prez@gmail.com>"
+  ],
+  "description": "A ridiculously simple nodechat app",
+  "main": "server.js",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "node",
+    "chat",
+    "bootstrap"
+  ],
+  "license": "MIT",
+  "homepage": "public/index.html",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0",
+    "angular": "~1.2.23"
+  }
+}
