@@ -1,12 +1,30 @@
 <!doctype html>
-<html ng-app="nodechat">
+<html>
 <head>
 	<title>Socket.IO chat</title>
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
 </head>
 <body ng-controller="chat">
+	<div class="modal fade" id="usermodal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Enter a username</h4>
+				</div>
+				<div class="modal-body">
+					<form ng-submit="setUser()">
+						<input type="text" ng-model="usertext" class="form-control" placeholder="Your awesome username" />
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" ng-click="setUser()">GO!</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="col-md-3">
+		<input type="text" class="form-control" ng-model="userfilter">
 		<ul id="userlist">
 			<li ng-repeat="user in users track by $index">{{user}}</li>
 		</ul>
@@ -15,15 +33,14 @@
 		<ul id="messages">
 			<li ng-repeat="msg in msgs track by $index">{{msg}}</li>
 		</ul>
-		<form ng-submit="msgsend()">
-			<input type="text" ng-model="msgtext" placeholder="Enter your message" />
+		<form ng-submit="msgSend()">
+			<input type="text" class="form-control" ng-model="msgtext" placeholder="Enter your message" />
 		</form>
 	</div>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="components/jquery/dist/jquery.min.js"></script>
 	<script src="components/angular/angular.min.js"></script>
-	<script src="components/angular-bootstrap/ui-bootstrap.min.js"></script>
-	<script src="components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+	<script src="components/bootstrap/js/modal.js"></script>
 	<script src="js/app.js"></script>
 </body>
 </html>
