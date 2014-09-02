@@ -3,6 +3,7 @@
   "description": "A ridiculously simple nodechat server",
   "dependencies": {
     "express": "^4.8.5",
+    "randomstring": "^1.0.3",
     "socket.io": "^1.0.6"
   }
 }
