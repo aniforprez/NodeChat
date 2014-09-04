@@ -90,10 +90,28 @@ app.controller('chat', function($scope){
 	});
 
 	socket.on('joined', function(roomData) {
-		console.log("room joined");
 		$scope.msgs = [];
 		$scope.roommates = roomData.users;
 		$scope.room      = roomData.room;
+		$scope.$apply();
+	});
+
+	socket.on('user quit', function(user) {
+		$scope.roommates.splice($scope.roommates.indexOf(user, 1));
+		$scope.$apply();
+	});
+
+	socket.on('room empty', function() {
+		$scope.msgs      = [];
+		$scope.room      = '';
+		$scope.roommates = [];
+		$scope.$apply();
+	});
+
+	socket.on('left room', function() {
+		$scope.msgs      = [];
+		$scope.room      = '';
+		$scope.roommates = [];
 		$scope.$apply();
 	});
 
