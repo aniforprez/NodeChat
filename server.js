@@ -17,6 +17,7 @@ app.get('/', function(req, res) {
 var allUsers       = [];
 var userSockets    = [];
 var availableUsers = [];
+var existingRooms  = [];
 
 io.on('connection', function(socket) {
 	socket.on('disconnect', function() {
@@ -35,6 +36,7 @@ io.on('connection', function(socket) {
 			availableUsers.push(user);
 			userSockets.push(socket);
 			socket.emit('user added');
+			socket.join('public');
 			io.emit('user list', availableUsers);
 		}
 		else {
@@ -42,10 +44,7 @@ io.on('connection', function(socket) {
 		}
 	});
 	socket.on('chat message', function(msg) {
-		if(socket.rooms.length <= 1)
-			socket.broadcast.emit('chat message', msg);
-		else
-			socket.broadcast.to(socket.rooms[1]).emit('chat message', msg);
+		socket.broadcast.to(socket.rooms[1]).emit('chat message', msg);
 	});
 	socket.on('chat with', function(user) {
 		var userInvitee = getSocketFromUsername(user);
@@ -53,20 +52,50 @@ io.on('connection', function(socket) {
 	});
 	socket.on('chat accepted', function(inviter) {
 		var inviterSocket = getSocketFromUsername(inviter);
-		if(inviterSocket.rooms.length <= 1) {
-			var newRoom = randomstring.generate(5);
-			inviterSocket.join(newRoom);
-			socket.join(newRoom);
-			availableUsers.splice(availableUsers.indexOf(inviter), 1);
-			availableUsers.splice(availableUsers.indexOf(getUsernameFromSocket(socket)), 1);
-			io.emit('user list', availableUsers);
+		var invitee       = getUsernameFromSocket(socket);
+		var newRoom       = "";
+		socket.leave('public');
+		if(inviterSocket.rooms[1] == 'public') {
+			newRoom = randomstring.generate(5);
+			inviterSocket.leave('public');
+			inviterSocket.join(newRoom, function() {
+				var roomData = {roomID: newRoom, members: [inviter]}
+				existingRooms.push(roomData);
+				inviterSocket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
+				io.to(newRoom).emit('new user', inviter);
+				socket.join(newRoom, function() {
+					existingRooms[getRoomIndex(newRoom)].members.push(invitee);
+					socket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
+					io.to(newRoom).emit('new user', invitee);
+					availableUsers.splice(availableUsers.indexOf(invitee), 1);
+					io.emit('user list', availableUsers);
+				});
+				availableUsers.splice(availableUsers.indexOf(inviter), 1);
+			});
 		}
 		else {
-			socket.join(inviterSocket.rooms[1]);
-			availableUsers.splice(availableUsers.indexOf(getUsernameFromSocket(socket)), 1);
-			io.emit('user list', availableUsers);
+			newRoom = inviterSocket.rooms[1];
+			socket.join(newRoom, function() {
+				existingRooms[getRoomIndex(newRoom)].members.push(invitee);
+				socket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
+				io.to(newRoom).emit('new user', invitee);
+				availableUsers.splice(availableUsers.indexOf(invitee), 1);
+				io.emit('user list', availableUsers);
+			});
 		}
 	});
+
+	/*socket.on('leave room', function() {
+		var memberIndex = existingRooms[getRoomIndex(newRoom)].indexOf(getUsernameFromSocket(socket));
+		existingRooms[getRoomIndex(newRoom)].members.splice(memberIndex, 1);
+		if(existingRooms[getRoomIndex(newRoom)].members.length <= 1) {
+			existingRooms.splice(getRoomIndex(newRoom), 1);
+		}
+		socket.leave(socket.rooms[1], function() {
+			socket.join('public');
+
+		});
+	});*/
 });
 
 var getSocketFromUsername = function(username) {
@@ -75,7 +104,23 @@ var getSocketFromUsername = function(username) {
 
 var getUsernameFromSocket = function(socket) {
 	return allUsers[userSockets.indexOf(socket)];
-}
+};
+
+var getRoomMembers = function(roomID) {
+	for(var i=0; i < existingRooms.length; i++) {
+		if(existingRooms[i].roomID == roomID) {
+			return existingRooms[i].members;
+		}
+	}
+};
+
+var getRoomIndex = function(roomID) {
+	for(var i=0; i < existingRooms.length; i++) {
+		if(existingRooms[i].roomID == roomID) {
+			return i;
+		}
+	}
+};
 
 http.listen(3000, function() {
 	console.log('Listening on port 3000');

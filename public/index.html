@@ -16,7 +16,7 @@
 				</div>
 				<div class="modal-body">
 					<form ng-submit="setUser()">
-						<input type="text" ng-model="usertext" class="form-control" placeholder="Your awesome username" />
+						<input type="text" ng-model="userInput" class="form-control" placeholder="Your awesome username" />
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -26,17 +26,18 @@
 		</div>
 	</div>
 	<div class="col-md-3">
-		<input type="text" class="form-control" ng-model="userfilter">
-		<ul id="userlist">
+		<input type="text" class="form-control" ng-model="userFilter">
+		<ul id="userList">
 			<li ng-repeat="user in users track by $index" ng-click="$parent.chooseUser($index)">{{user}}</li>
 		</ul>
 	</div>
 	<div class="col-md-9">
+		<button class="btn btn-danger" ng-click="leaveChat()">Leave chat</button>
 		<ul id="messages">
 			<li ng-repeat="msg in msgs track by $index">{{msg}}</li>
 		</ul>
 		<form ng-submit="msgSend()">
-			<input type="text" class="form-control" ng-model="msgtext" placeholder="Enter your message" />
+			<input type="text" class="form-control" ng-model="msgInput" placeholder="Enter your message" />
 		</form>
 	</div>
 	<script src="/socket.io/socket.io.js"></script>
