@@ -34,7 +34,9 @@
 	<div class="col-md-9">
 		<button class="btn btn-danger" ng-click="leaveChat()">Leave chat</button>
 		<ul id="messages">
-			<li ng-repeat="msg in msgs track by $index">{{msg}}</li>
+			<li ng-repeat="msg in msgs track by $index">
+				<strong>{{msg.sender}}:</strong> {{msg.message}}
+			</li>
 		</ul>
 		<form ng-submit="msgSend()">
 			<input type="text" class="form-control" ng-model="msgInput" placeholder="Enter your message" />

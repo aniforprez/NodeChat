@@ -24,14 +24,42 @@ io.on('connection', function(socket) {
 		var i = userSockets.indexOf(socket);
 
 		if(i > -1) {
-			var j = availableUsers.indexOf(allUsers[i]);
+			var room = socket.rooms[1];
+			if(room != 'public') {
+				var roomIndex    = getRoomIndex(room);
+				var quitterUser  = getUsernameFromSocket(socket);
+				var quitterIndex = existingRooms[roomIndex].members.indexOf(quitterUser);
 
-			availableUsers.splice(j, 1);
+				existingRooms[roomIndex].members.splice(quitterIndex, 1);
+				availableUsers.push(quitterUser);
+
+				io.to(room).emit('user quit', quitterUser);
+
+				if(existingRooms[roomIndex].members.length <= 1) {
+					var lonesomeUser   = existingRooms[roomIndex].members[0];
+					var lonesomeSocket = getSocketFromUsername(lonesomeUser);
+
+					lonesomeSocket.leave(room, function() {
+						lonesomeSocket.join('public');
+					});
+
+					existingRooms.splice(roomIndex, 1);
+					availableUsers.push(lonesomeUser);
+
+					lonesomeSocket.emit('room empty');
+				}
+			}
+
+			var j = availableUsers.indexOf(allUsers[i]);
+			if(j > -1)
+				availableUsers.splice(j, 1);
+
 			allUsers.splice(i, 1);
 			userSockets.splice(i, 1);
 		}
 
-		io.to('public').emit('user list', availableUsers);
+		for(var j=0; j < userSockets.length; j++)
+			userSockets[j].emit('user list', availableUsers);
 	});
 	socket.on('new user', function(user) {
 		if(allUsers.indexOf(user) == -1) {
@@ -42,14 +70,15 @@ io.on('connection', function(socket) {
 			socket.join('public');
 
 			socket.emit('user added');
-			io.to('public').emit('user list', availableUsers);
+			for(var j=0; j < userSockets.length; j++)
+				userSockets[j].emit('user list', availableUsers);
 		}
 		else {
 			socket.emit('user exists');
 		}
 	});
 	socket.on('chat message', function(msg) {
-		socket.broadcast.to(socket.rooms[1]).emit('chat message', msg);
+		socket.broadcast.to(socket.rooms[1]).emit('chat message', {sender: getUsernameFromSocket(socket), message: msg});
 	});
 	socket.on('chat with', function(user) {
 		var userInvitee = getSocketFromUsername(user);
@@ -81,7 +110,8 @@ io.on('connection', function(socket) {
 
 					socket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
 					io.to(newRoom).emit('new user', invitee);
-					io.to('public').emit('user list', availableUsers);
+					for(var j=0; j < userSockets.length; j++)
+						userSockets[j].emit('user list', availableUsers);
 				});
 				availableUsers.splice(availableUsers.indexOf(inviter), 1);
 			});
@@ -95,7 +125,8 @@ io.on('connection', function(socket) {
 
 				socket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
 				io.to(newRoom).emit('new user', invitee);
-				io.to('public').emit('user list', availableUsers);
+				for(var j=0; j < userSockets.length; j++)
+					userSockets[j].emit('user list', availableUsers);
 			});
 		}
 	});
@@ -108,7 +139,7 @@ io.on('connection', function(socket) {
 
 			var roomIndex    = getRoomIndex(room);
 			var quitterUser  = getUsernameFromSocket(socket);
-			var quitterIndex = existingRooms[roomIndex].indexOf(quitterUser);
+			var quitterIndex = existingRooms[roomIndex].members.indexOf(quitterUser);
 
 			existingRooms[roomIndex].members.splice(quitterIndex, 1);
 			availableUsers.push(quitterUser);
@@ -129,7 +160,8 @@ io.on('connection', function(socket) {
 				lonesomeSocket.emit('room empty');
 			}
 
-			io.to('public').emit('user list', availableUsers);
+			for(var j=0; j < userSockets.length; j++)
+				userSockets[j].emit('user list', availableUsers);
 		});
 	});
 });

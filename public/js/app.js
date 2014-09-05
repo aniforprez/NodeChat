@@ -42,7 +42,7 @@ app.controller('chat', function($scope){
 	$scope.msgSend = function() {
 		if($scope.msgInput) {
 			socket.emit('chat message', $scope.msgInput);
-			$scope.msgs.push($scope.msgInput);
+			$scope.msgs.push({sender: "me", message: $scope.msgInput});
 			$scope.msgInput = '';
 		}
 	};
@@ -56,11 +56,13 @@ app.controller('chat', function($scope){
 	};
 
 	$scope.leaveChat = function() {
-		socket.emit('leave room', room);
+		console.log("leaving room");
+		if($scope.room != '')
+			socket.emit('leave room', $scope.room);
 	};
 
-	socket.on('chat message', function(msg) {
-		$scope.msgs.push(msg);
+	socket.on('chat message', function(msgData) {
+		$scope.msgs.push(msgData);
 		$scope.$apply();
 	});
 
@@ -90,7 +92,7 @@ app.controller('chat', function($scope){
 	});
 
 	socket.on('joined', function(roomData) {
-		$scope.msgs = [];
+		$scope.msgs      = [];
 		$scope.roommates = roomData.users;
 		$scope.room      = roomData.room;
 		$scope.$apply();
