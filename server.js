@@ -58,8 +58,8 @@ io.on('connection', function(socket) {
 			userSockets.splice(i, 1);
 		}
 
-		for(var j=0; j < userSockets.length; j++)
-			userSockets[j].emit('user list', availableUsers);
+		for(var k=0; k < userSockets.length; k++)
+			userSockets[k].emit('user list', availableUsers);
 	});
 	socket.on('new user', function(user) {
 		if(allUsers.indexOf(user) == -1) {
