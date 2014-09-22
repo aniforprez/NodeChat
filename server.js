@@ -190,6 +190,6 @@ var getRoomIndex = function(roomID) {
 	}
 };
 
-http.listen(process.env.port || 3000, function() {
-	console.log('Listening on port 3000');
+http.listen(process.env.port, function() {
+	console.log('Listening for chat');
 });
