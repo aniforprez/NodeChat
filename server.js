@@ -27,6 +27,7 @@ io.on('connection', function(socket) {
 			var room = socket.rooms[1];
 			if(room !== 'public') {
 				var roomIndex    = getRoomIndex(room);
+				console.log(roomIndex + ", " + existingRooms[roomIndex]);
 				var quitterUser  = getUsernameFromSocket(socket);
 				var quitterIndex = existingRooms[roomIndex].members.indexOf(quitterUser);
 
