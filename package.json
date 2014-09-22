@@ -2,8 +2,12 @@
   "name": "SimpleChat",
   "description": "A ridiculously simple nodechat server",
   "dependencies": {
+    "bower": "^1.3.11",
     "express": "^4.8.5",
     "randomstring": "^1.0.3",
     "socket.io": "^1.0.6"
+  },
+  "scripts": {
+    "postinstall": "./node_modules/bower/bin/bower install"
   }
 }
