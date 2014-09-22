@@ -175,17 +175,17 @@ var getUsernameFromSocket = function(socket) {
 	return allUsers[userSockets.indexOf(socket)];
 };
 
-var getRoomMembers = function(roomID) {
+var getRoomMembers = function(searchRoomID) {
 	for(var i = 0; i < existingRooms.length; i++) {
-		if(existingRooms[i].roomID == roomID) {
+		if(existingRooms[i].roomID === searchRoomID) {
 			return existingRooms[i].members;
 		}
 	}
 };
 
-var getRoomIndex = function(roomID) {
+var getRoomIndex = function(searchRoomID) {
 	for(var i = 0; i < existingRooms.length; i++) {
-		if(existingRooms[i].roomID == roomID) {
+		if(existingRooms[i].roomID === searchRoomID) {
 			return i;
 		}
 	}
