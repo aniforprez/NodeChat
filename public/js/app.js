@@ -57,7 +57,7 @@ app.controller('chat', function($scope){
 
 	$scope.leaveChat = function() {
 		console.log("leaving room");
-		if($scope.room != '')
+		if($scope.room !== '')
 			socket.emit('leave room', $scope.room);
 	};
 
@@ -107,6 +107,7 @@ app.controller('chat', function($scope){
 		$scope.msgs      = [];
 		$scope.room      = '';
 		$scope.roommates = [];
+		console.log("room empty man");
 		$scope.$apply();
 	});
 
@@ -120,7 +121,6 @@ app.controller('chat', function($scope){
 	socket.on('new user', function(user) {
 		if($scope.roommates.indexOf(user) == -1)
 			$scope.roommates.push(user);
-		console.log($scope.roommates);
 	});
 
 	socket.on('disconnect', function() {

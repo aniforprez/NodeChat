@@ -25,7 +25,7 @@ io.on('connection', function(socket) {
 
 		if(i > -1) {
 			var room = socket.rooms[1];
-			if(room != 'public') {
+			if(room !== 'public') {
 				var roomIndex    = getRoomIndex(room);
 				var quitterUser  = getUsernameFromSocket(socket);
 				var quitterIndex = existingRooms[roomIndex].members.indexOf(quitterUser);
@@ -58,7 +58,7 @@ io.on('connection', function(socket) {
 			userSockets.splice(i, 1);
 		}
 
-		for(var k=0; k < userSockets.length; k++)
+		for(var k = 0; k < userSockets.length; k++)
 			userSockets[k].emit('user list', availableUsers);
 	});
 	socket.on('new user', function(user) {
@@ -70,7 +70,7 @@ io.on('connection', function(socket) {
 			socket.join('public');
 
 			socket.emit('user added');
-			for(var j=0; j < userSockets.length; j++)
+			for(var j = 0; j < userSockets.length; j++)
 				userSockets[j].emit('user list', availableUsers);
 		}
 		else {
@@ -110,7 +110,7 @@ io.on('connection', function(socket) {
 
 					socket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
 					io.to(newRoom).emit('new user', invitee);
-					for(var j=0; j < userSockets.length; j++)
+					for(var j = 0; j < userSockets.length; j++)
 						userSockets[j].emit('user list', availableUsers);
 				});
 				availableUsers.splice(availableUsers.indexOf(inviter), 1);
@@ -125,7 +125,7 @@ io.on('connection', function(socket) {
 
 				socket.emit('joined', {users: getRoomMembers(newRoom), room: newRoom});
 				io.to(newRoom).emit('new user', invitee);
-				for(var j=0; j < userSockets.length; j++)
+				for(var j = 0; j < userSockets.length; j++)
 					userSockets[j].emit('user list', availableUsers);
 			});
 		}
@@ -160,7 +160,7 @@ io.on('connection', function(socket) {
 				lonesomeSocket.emit('room empty');
 			}
 
-			for(var j=0; j < userSockets.length; j++)
+			for(var j = 0; j < userSockets.length; j++)
 				userSockets[j].emit('user list', availableUsers);
 		});
 	});
@@ -175,7 +175,7 @@ var getUsernameFromSocket = function(socket) {
 };
 
 var getRoomMembers = function(roomID) {
-	for(var i=0; i < existingRooms.length; i++) {
+	for(var i = 0; i < existingRooms.length; i++) {
 		if(existingRooms[i].roomID == roomID) {
 			return existingRooms[i].members;
 		}
@@ -183,7 +183,7 @@ var getRoomMembers = function(roomID) {
 };
 
 var getRoomIndex = function(roomID) {
-	for(var i=0; i < existingRooms.length; i++) {
+	for(var i = 0; i < existingRooms.length; i++) {
 		if(existingRooms[i].roomID == roomID) {
 			return i;
 		}
